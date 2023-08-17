@@ -9,7 +9,6 @@
 
 #include "UtilA.h" //put the actual path here.
 
-
 //what does one save, and what does one do to update the file?
 //in an actual wordprocessor, one should NOT go saving the file after every change.
 //but I don't know that I really want to load the file to memory...

@@ -28,12 +28,12 @@ int CharDrawer::rowsEnd() {
   return i;
 }
 /* Format of printing:
-ideally, it could be like this:
+ideally, it could be roughly like this:
   12345.789111
            012
 1 xxxxxxxxxxxx
 2 xxxxxxxxxxxx
-. xxxxxxxxxxxx
+. xxxxx.xxxxxx
 4 xxxxxxxxxxxx
 5 xxxxxxxxxxxx
 6 xxxxxxxxxxxx
@@ -43,11 +43,11 @@ ideally, it could be like this:
 10xxxxxxxxxxxx
 11xxxxxxxxxxxx
 
-But never mind, this is all I really want:
+But never mind, I don't need much more than this:
     .   
  xxxxxxx
-.xxxxxxx
- xxxxxxx
+.xxx.xx
+ xxxxxxxxx
 
 really lame, but so what.
 honestly, this is actually more effort than I want to put into it....
@@ -125,7 +125,7 @@ void CharDrawer::draw() {
       case keyboardActionKey::arrowDown;
         nCursorRow++;
         break;
-      case keyboardActionKey::esc;
+      case keyboardActionKey::escape;
         navigate();
         break;
       default:
@@ -252,4 +252,3 @@ void CharDrawer::closefile() {
   }
   strFilename = "";
 }
-
