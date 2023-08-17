@@ -13,13 +13,13 @@ int CharDrawer::lengthRow(int nRow) {
 }
 int CharDrawer::lengthLongestRow() {
   int nRowLength = 0;
-  for (int i = 0; i <= nRowEnd(); ++i)
+  for (int i = 0; i <= rowsEnd(); ++i)
     nRowLength = maxsimp(nRowLength, lengthRow(i));
   return nRowLength;
 }
 //returns 1 plus the index of the last row,
 //that is, returns the number of rows.
-int CharDrawer::nRowEnd() {
+int CharDrawer::rowsEnd() {
   string str;
   int i = 0;
   fs.seekg(0, fs.beg);
@@ -58,7 +58,7 @@ honestly, this is actually more effort than I want to put into it....
 */
 void CharDrawer::print(bool bDrawingMode = false) {
   system("cls"); //clear screen, for the fun of it.
-  int nEnd = nRowEnd();
+  int nEnd = rowsEnd();
   fs.seekg(0, fs.beg);
   //print top row with a '.' so we know where we are
   if(bDrawingMode) {
@@ -77,9 +77,11 @@ void CharDrawer::print(bool bDrawingMode = false) {
       //otherwise, going right will automatically print a ' ' to the file,... or maybe be prohibited.
       while(fs.get(c) || j == nCursorCol) {
         if (j++ == nCursorCol) cout << '.';
+        else if (c == '\n') {
+          if (j == nCursorCol) cout << '.';
+          break; 
+          }
         else                   cout << c;
-        if (c == '\n' && nCursorCol > j)
-          break; //come to the end
       }
       cout << '|' << endl;
     }
@@ -140,8 +142,10 @@ bool CharDrawer::prepareCursor() {
   int nLocation = 0;
   //!! we have to pre-compute this, or else it will alter the location of our writer in fs. !!
   int nLengthCursorRow = lengthRow(nCursorRow);
+  int nRowEnd = rowsEnd();
   for(int i = 0; i < fs.seekg(0, fs.beg); ++i)
     nLocation += lengthRow(i) + 1; //+ 1 for '\n'.
+
   //the order of these 3 steps obviously matters!
   // * put cursor within extreme bounds *
   nCursorRow = maxsimp(nCursorRow, 0);
@@ -150,20 +154,20 @@ bool CharDrawer::prepareCursor() {
   //nCursorCol = minsimp(nCursorCol, nColMaxAllowed);
 
   // * make sure the row exists and position our cursor on it *
-  if (nCursorRow > nRowEnd()) {
-    fs.seekg(0, is.end); //append to end of file
-    nLocation = fs.tellg(0, is.end); //although in this case, it doesn't really matter...
+  if (nCursorRow > nRowEnd) {
+    fs.seekg(0, fs.end); //append to end of file
+    nLocation = fs.tellg(0, fs.end);
   } else
-    fs.seekg((nLocation - 1), is.begin); //check for off by 1 error.
-  while (nCursorRow > nRowEnd()) {
+    fs.seekg((nLocation), fs.begin); //check for off by 1 error.
+  while (nCursorRow > nRowEnd++) {
     fs << "\n";
     nLocation++;
   }
   // * make sure the column exists and get in position *
   // we are already on the row, so let's get to the correct column, or the last column if needbe.
-  int nLocation += minsimp(lengthRow(nCursorRow), nCursorCol - 1);
+  int nLocation += minsimp(nLengthCursorRow, nCursorCol);
   fs.seekg(nLocation, fs.beg);
-  while (nCursorCol > nCursorRow ) //note this is >.
+  while (nCursorCol > nLengthCursorRow++) //note this is >.
     fs << " ";
   // * the cursor is now in position. *
 }
@@ -248,3 +252,4 @@ void CharDrawer::closefile() {
   }
   strFilename = "";
 }
+

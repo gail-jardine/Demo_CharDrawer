@@ -55,7 +55,7 @@ private:
 
     //caution! these 3 functions ALTER the position of our filereader!
     //I could do something to prevent them from doing so, but...
-    int nRowEnd(); //the number of rows, hence, we have rows of indices [0, nRowEnd();).
+    int rowsEnd(); //the number of rows, hence, we have rows of indices [0, nRowEnd();).
     int lengthRow(int nRow);
     int lengthLongestRow(); //currently not needed.
 }
